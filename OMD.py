@@ -46,8 +46,8 @@ class OMD:
     def __init__(self):
         self.ip = "192.168.0.10"
         self.settings, self.settables = self.get_all_settings()
-        pp = pprint.PrettyPrinter()
-        pp.pprint(self.settables)
+        #pp = pprint.PrettyPrinter()
+        #pp.pprint(self.settables)
         
     def make_url(self, cmd):
         return "http://%s/%s.cgi" % (self.ip, cmd)
@@ -86,7 +86,6 @@ class OMD:
     def get_all_settings(self):
         self.switch_mode("rec")
         root = ET.fromstring(self.get_url("http://192.168.0.10/get_camprop.cgi?com=desc&propname=desclist"))
-        print root.tag
         settings = {}
         for child in root:
             if child.tag == "desc":
@@ -120,6 +119,13 @@ class OMD:
         else:
             raise Exception("Invalid camera mode")
 
+    def is_settable(self, settingname):
+        return self.settings[settingname]["attribute"] == "getset"
+    
+    def get_setting(self, settingname):
+        current_value  = self.settings[settingname]["value"]
+        allowed_values = self.settings[settingname]["enum"]
+        return current_value, allowed_values
         
     def set_shutter(self, speed):
         self.switch_mode("rec")
@@ -140,6 +146,9 @@ class OMD:
 # take_photo()
 #
 omd = OMD()
+print omd.get_setting("shutspeedvalue")
+print omd.is_settable("shutspeedvalue")
+omd.take_photo()
 #omd.set_shutter('1"')
 #omd.take_photo()
 
